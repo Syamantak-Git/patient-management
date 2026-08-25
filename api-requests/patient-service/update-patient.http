@@ -7,5 +7,4 @@ Content-Type: application/json
   "email": "test@abc.com",
   "address": "123 Main St, Anytown, USA",
   "dateOfBirth": "1990-01-01",
-  "registeredDate": "2023-01-01"
 }
