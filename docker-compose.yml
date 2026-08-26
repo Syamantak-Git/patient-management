@@ -47,6 +47,26 @@ services:
         condition: service_healthy
     networks:
       - patient-management-network
+   
+      
+
+  billing-service:
+    build:
+      context: ./billing-service
+      dockerfile: Dockerfile
+    container_name: billing-service
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+      - "9001:9001"
+    environment:
+      SERVER_PORT: 4001
+      GRPC_SERVER_PORT: 9001
+    depends_on:
+      - patient-service
+    networks:
+      - patient-management-network
+
 
 volumes:
   patient_db_data:
