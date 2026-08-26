@@ -28,8 +28,16 @@
 		<url />
 	</scm>
 	<properties>
-		<java.version>25</java.version>
-	</properties>
+        <java.version>25</java.version>
+
+        <!-- Keep all gRPC libraries on the same version -->
+        <grpc.version>1.83.1</grpc.version>
+
+        <!-- Protobuf compiler -->
+        <protobuf.version>4.29.1</protobuf.version>
+
+        <protoc.version>4.29.1</protoc.version>
+    </properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -84,16 +92,104 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>3.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-protobuf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-stub</artifactId>
+		</dependency>
+
+		<!-- ===================================================== -->
+		<!-- gRPC Spring Boot integration                           -->
+		<!-- ===================================================== -->
+
+		<dependency>
+			<groupId>net.devh</groupId>
+			<artifactId>grpc-spring-boot-starter</artifactId>
+			<version>3.1.0.RELEASE</version>
+		</dependency>
+
+		<!-- Required for generated gRPC code on Java 9+ -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>annotations-api</artifactId>
+			<version>6.0.53</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- ===================================================== -->
+		<!-- Protobuf                                                -->
+		<!-- ===================================================== -->
+
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${protobuf.version}</version>
+		</dependency>
 
 	</dependencies>
 
 	<build>
+
+		<extensions>
+
+			<!-- Detect operating system for protoc executable -->
+			<extension>
+				<groupId>kr.motd.maven</groupId>
+				<artifactId>os-maven-plugin</artifactId>
+				<version>1.7.0</version>
+			</extension>
+
+		</extensions>
+
 		<plugins>
+
+			<!-- Spring Boot -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- ================================================= -->
+			<!-- Protobuf / gRPC code generation                    -->
+			<!-- ================================================= -->
+
+			<plugin>
+				<groupId>org.xolstice.maven.plugins</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>0.6.1</version>
+
+				<configuration>
+					<!-- Protobuf compiler -->
+					<protocArtifact>
+						com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+
+					<!-- gRPC Java compiler -->
+					<pluginId>grpc-java</pluginId>
+					<pluginArtifact>
+						io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+				</configuration>
+
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>compile-custom</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
+
 	</build>
 
 </project>
