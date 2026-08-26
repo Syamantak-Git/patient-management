@@ -1,4 +1,4 @@
-FROM maven:3.9.14-eclipse-temurin-25-alpine AS builder
+FROM maven:3.9.16-eclipse-temurin-25-noble AS builder
 
 WORKDIR /app
 
@@ -11,6 +11,8 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:25-jre-alpine AS runner
+
+WORKDIR /app
 
 COPY --from=builder /app/target/patient-service-0.0.1-SNAPSHOT.jar ./app.jar
 
