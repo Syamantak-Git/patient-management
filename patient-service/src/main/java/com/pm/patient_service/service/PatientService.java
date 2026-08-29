@@ -11,6 +11,7 @@ import com.pm.patient_service.dto.PatientResponseDTO;
 import com.pm.patient_service.exception.EmailAlreadyExistsException;
 import com.pm.patient_service.exception.PatientNotFoundException;
 import com.pm.patient_service.grpc.BillingServiceGrpcClient;
+import com.pm.patient_service.kafka.KafkaProducer;
 import com.pm.patient_service.mapper.PatientMapper;
 import com.pm.patient_service.model.Patient;
 import com.pm.patient_service.repository.PatientRepository;
@@ -18,10 +19,16 @@ import com.pm.patient_service.repository.PatientRepository;
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
+    private final KafkaProducer kafkaProducer;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
-    public PatientService(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient) {
+
+    public PatientService(
+            PatientRepository patientRepository,
+            BillingServiceGrpcClient billingServiceGrpcClient,
+            KafkaProducer kafkaProducer) {
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+        this.kafkaProducer = kafkaProducer;
     }
 
     public List<PatientResponseDTO> getAllPatients() {
@@ -39,12 +46,13 @@ public class PatientService {
         Patient patient = PatientMapper.toModel(patientRequestDTO);
         patientRepository.save(patient);
 
-        billingServiceGrpcClient.createBillingAccount(patient.getId().toString(), patient.getName(), patient.getEmail());
+        billingServiceGrpcClient.createBillingAccount(patient.getId().toString(), patient.getName(),
+                patient.getEmail());
+
+        kafkaProducer.sendEvent(patient);
 
         return PatientMapper.toDTO(patient);
     }
-
-
 
     public PatientResponseDTO upadtePatient(UUID id, PatientRequestDTO patientRequestDTO) {
         Patient patient = patientRepository.findById(id)
