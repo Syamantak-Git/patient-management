@@ -28,16 +28,16 @@
 		<url />
 	</scm>
 	<properties>
-        <java.version>25</java.version>
+		<java.version>25</java.version>
 
-        <!-- Keep all gRPC libraries on the same version -->
-        <grpc.version>1.83.1</grpc.version>
+		<!-- Keep all gRPC libraries on the same version -->
+		<grpc.version>1.83.1</grpc.version>
 
-        <!-- Protobuf compiler -->
-        <protobuf.version>4.29.1</protobuf.version>
+		<!-- Protobuf compiler -->
+		<protobuf.version>4.29.1</protobuf.version>
 
-        <protoc.version>4.29.1</protoc.version>
-    </properties>
+		<protoc.version>4.29.1</protoc.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -135,9 +135,8 @@
 			<version>${protobuf.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka</artifactId>
-			<version>3.3.0</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-kafka</artifactId>
 		</dependency>
 	</dependencies>
 
